@@ -1,5 +1,6 @@
 from app.models.movie import Movie
 from app.extensions import db
+from math import ceil
 
 class MovieService:
 
@@ -67,3 +68,30 @@ class MovieService:
         db.session.commit()
 
         return True
+
+    @staticmethod
+    def get_movies_paginated(page=1, limit=10, active_only=True):
+        query = Movie.query
+
+        if active_only:
+            query = query.filter_by(is_active=True)
+
+        total = query.count()
+
+        movies = query \
+            .order_by(Movie.created_at.desc()) \
+            .offset((page - 1) * limit) \
+            .limit(limit) \
+            .all()
+
+        total_pages = ceil(total / limit) if limit else 1
+
+        return {
+            "items": movies,
+            "meta": {
+                "page": page,
+                "limit": limit,
+                "total": total,
+                "total_pages": total_pages
+            }
+        }

@@ -30,20 +30,35 @@ def create_movie():
 
 @movie_bp.route("/", methods=["GET"])
 def get_movies():
-    movies = MovieService.get_all_movies()
+    # query params
+    page = int(request.args.get("page", 1))
+    limit = int(request.args.get("limit", 10))
+    active_only = request.args.get("active_only", "true").lower() == "true"
+
+    # validation negative page
+    if page < 1:
+        page = 1
+
+    # validation limit should not exceed 50
+    if limit > 50:
+        limit = 50
+
+    results = MovieService.get_movies_paginated(page=page, limit=limit, active_only=active_only)
+    movies = results["items"]
+    meta = results["meta"]
 
     data = [
         {
             "id": m.id,
             "title": m.title,
-            "description": m.description,
             "duration": m.duration,
-            "is_active": m.is_active
+            "is_active": m.is_active,
+            "created_at": m.created_at.isoformat()
         }
         for m in movies
     ]
 
-    return api_response(data=data)
+    return api_response(data=data,meta=meta)
 
 @movie_bp.route("/<int:movie_id>", methods=["GET"])
 def get_movie(movie_id):
