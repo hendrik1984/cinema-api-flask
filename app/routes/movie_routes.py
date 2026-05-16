@@ -21,9 +21,10 @@ def create_movie():
     return api_response(
         data={
             "id": movie.id,
-            "title": movie.title
+            "title": movie.title, 
+            "description": movie.description,
         },
-        message="Movie created",
+        message=f"Movie {movie.title} created",
         status_code=201
     )
 
@@ -35,6 +36,7 @@ def get_movies():
         {
             "id": m.id,
             "title": m.title,
+            "description": m.description,
             "duration": m.duration,
             "is_active": m.is_active
         }
@@ -69,8 +71,14 @@ def update_movie(movie_id):
         m = MovieService.update_movie(movie_id, **data)
 
         return api_response(
-            data={"id": m.id},
-            message="Movie updated"
+            data={
+                "id": m.id,
+                "title": m.title,
+                "description": m.description,
+                "duration": m.duration,
+                "is_active": m.is_active
+            },
+            message=f"Movie {m.title} updated"
         )
 
     except ValueError as e:
