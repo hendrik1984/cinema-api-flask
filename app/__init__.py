@@ -11,8 +11,13 @@ def create_app():
     jwt.init_app(app)
     migrate.init_app(app, db)
 
+    #User Routes
     from .routes.user_routes import user_bp
     app.register_blueprint(user_bp, url_prefix="/users")
+    
+    #Movie Routes
+    from .routes.movie_routes import movie_bp
+    app.register_blueprint(movie_bp, url_prefix="/movies")
 
     app.cli.add_command(seed_cli)
 
