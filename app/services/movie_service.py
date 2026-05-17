@@ -70,11 +70,28 @@ class MovieService:
         return True
 
     @staticmethod
-    def get_movies_paginated(page=1, limit=10, active_only=True):
+    def get_movies_paginated(
+        page=1,
+        limit=10,
+        search=None,
+        min_duration=None,
+        max_duration=None, 
+        is_active=None
+    ):
+
         query = Movie.query
 
-        if active_only:
-            query = query.filter_by(is_active=True)
+        if search:
+            query = query.filter(Movie.title.ilike(f"%s{search}"))
+
+        if min_duration is not None:
+            query = query.filter(Movie.duration >= min_duration)
+
+        if max_duration is not None:
+            query = query.filter(Movie.duration <= max_duration)
+
+        if is_active:
+            query = query.filter_by(is_active == is_active)
 
         total = query.count()
 

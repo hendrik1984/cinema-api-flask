@@ -30,35 +30,60 @@ def create_movie():
 
 @movie_bp.route("/", methods=["GET"])
 def get_movies():
-    # query params
-    page = int(request.args.get("page", 1))
-    limit = int(request.args.get("limit", 10))
-    active_only = request.args.get("active_only", "true").lower() == "true"
+    try:
+        # query params
+        page = int(request.args.get("page", 1))
+        limit = int(request.args.get("limit", 10))
 
-    # validation negative page
-    if page < 1:
-        page = 1
+        #filters
+        search = request.args.get("search")
+        min_duration = request.args.get("min_duration")
+        max_duration = request.args.get("max_duration")
+        is_active = request.args.get("is_active")
 
-    # validation limit should not exceed 50
-    if limit > 50:
-        limit = 50
+        # convert type
+        min_duration = int(min_duration) if min_duration else None
+        max_duration = int(max_duration) if max_duration else None
 
-    results = MovieService.get_movies_paginated(page=page, limit=limit, active_only=active_only)
-    movies = results["items"]
-    meta = results["meta"]
+        if is_active is not None:
+            is_active = is_active.lower() == "true"
 
-    data = [
-        {
-            "id": m.id,
-            "title": m.title,
-            "duration": m.duration,
-            "is_active": m.is_active,
-            "created_at": m.created_at.isoformat()
-        }
-        for m in movies
-    ]
+        # validation negative page
+        if page < 1:
+            page = 1
 
-    return api_response(data=data,meta=meta)
+        # validation limit should not exceed 50
+        if limit > 50:
+            limit = 50
+
+        results = MovieService.get_movies_paginated(
+            page=page, 
+            limit=limit, 
+            search=search, 
+            min_duration=min_duration,
+            max_duration=max_duration,
+            is_active=is_active
+        )
+
+        movies = results["items"]
+        meta = results["meta"]
+
+        data = [
+            {
+                "id": m.id,
+                "title": m.title,
+                "description": m.description,
+                "duration": m.duration,
+                "is_active": m.is_active,
+                "created_at": m.created_at.isoformat()
+            }
+            for m in movies
+        ]
+
+        return api_response(data=data,meta=meta)
+    
+    except ValueError:
+        return api_response(error="Invalid query parameters", status_code=400)
 
 @movie_bp.route("/<int:movie_id>", methods=["GET"])
 def get_movie(movie_id):
