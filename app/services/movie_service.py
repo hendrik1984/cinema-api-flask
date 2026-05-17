@@ -82,7 +82,7 @@ class MovieService:
         query = Movie.query
 
         if search:
-            query = query.filter(Movie.title.ilike(f"%s{search}"))
+            query = query.filter(Movie.title.ilike(f"%{search}%"))
 
         if min_duration is not None:
             query = query.filter(Movie.duration >= min_duration)
