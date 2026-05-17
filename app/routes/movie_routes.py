@@ -37,10 +37,10 @@ def get_movies():
 
         #filters
         search = request.args.get("search")
-        min_duration = request.args.get("min_duration")
-        max_duration = request.args.get("max_duration")
-        is_active = request.args.get("is_active")
-
+        min_duration = request.args.get("minDuration")
+        max_duration = request.args.get("maxDuration")
+        is_active = request.args.get("isActive")
+        
         # convert type
         min_duration = int(min_duration) if min_duration else None
         max_duration = int(max_duration) if max_duration else None

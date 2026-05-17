@@ -78,20 +78,20 @@ class MovieService:
         max_duration=None, 
         is_active=None
     ):
-
+        
         query = Movie.query
 
         if search:
             query = query.filter(Movie.title.ilike(f"%{search}%"))
-
+        
         if min_duration is not None:
             query = query.filter(Movie.duration >= min_duration)
-
+        
         if max_duration is not None:
             query = query.filter(Movie.duration <= max_duration)
 
-        if is_active:
-            query = query.filter_by(is_active == is_active)
+        if is_active is not None:
+            query = query.filter_by(is_active=is_active)
 
         total = query.count()
 
