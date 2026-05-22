@@ -34,6 +34,29 @@ def seed_admin():
     print(f"Email: {email}")
     print(f"Password: {password}")
 
+@seed_cli.command("user")
+def seed_user():
+    print("Create user")
+    email = "john.wick1@gmail.com"
+    username = "john.wick1"
+    password = "password"
+
+    existing_user = User.query.filter_by(email=email).first()
+
+    if existing_user:
+        print("User already exists")
+        return
+
+    admin = User(
+        email=email,
+        username=username,
+        role="admin"
+    )
+    admin.set_password(password)
+
+    db.session.add(admin)
+    db.session.commit()
+
 @seed_cli.command("movies")
 def seed_movies():
     movies = [

@@ -13,7 +13,7 @@ def create_movie():
     data = request.json
 
     movie = MovieService.create_movie(
-        title=data["title"],
+        title=data.get["title"],
         description=data.get("description"),
         duration=data.get("duration")
     )
